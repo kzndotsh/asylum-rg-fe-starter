@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {
   BrowserRouter as Router,
   Route,
-  // useHistory,
+  useHistory,
   Switch,
 } from 'react-router-dom';
 
@@ -23,22 +23,41 @@ import { configureStore } from '@reduxjs/toolkit';
 import reducer from './state/reducers';
 import { colors } from './styles/data_vis_colors';
 
+import Auth0ProviderWithHistory from './auth/auth0-provider-with-history';
+
+import { useAuth0 } from '@auth0/auth0-react';
+
+import LoadingComponent from './components/common/LoadingComponent';
+
+import ProtectedRoute from './auth/ProtectedRoute';
+import Profile from './components/pages/Profile/Profile';
+
+import AuthNav from './components/common/AuthNav';
+
 const { primary_accent_color } = colors;
 
 const store = configureStore({ reducer: reducer });
 ReactDOM.render(
   <Router>
-    <Provider store={store}>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    </Provider>
+    <Auth0ProviderWithHistory>
+      <Provider store={store}>
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      </Provider>
+    </Auth0ProviderWithHistory>
   </Router>,
   document.getElementById('root')
 );
 
 export function App() {
   const { Footer, Header } = Layout;
+  const { isLoading } = useAuth0();
+
+  if (isLoading) {
+    return <LoadingComponent />;
+  }
+
   return (
     <Layout>
       <Header
@@ -54,6 +73,7 @@ export function App() {
       <Switch>
         <Route path="/" exact component={LandingPage} />
         <Route path="/graphs" component={GraphsContainer} />
+        <ProtectedRoute path="/profile" component={Profile} />
         <Route component={NotFoundPage} />
       </Switch>
       <Footer

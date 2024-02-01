@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Skeleton } from 'antd';
 
-function LoadingComponent(props) {
-  const { message } = props;
-
-  return <div>{message}</div>;
+function LoadingComponent() {
+  return (
+    <div className="loading-component">
+      <Skeleton active />
+    </div>
+  );
 }
 
 export default LoadingComponent;
-
-LoadingComponent.propTypes = {
-  message: PropTypes.string.isRequired,
-};
